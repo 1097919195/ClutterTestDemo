@@ -1,6 +1,7 @@
 package com.example.zjl.videoplayerdemo.activity;
 
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
@@ -20,14 +21,14 @@ public class MainActivity extends BaseActivity {
     private ServiceConnection conn = new ServiceConnection() {
         @Override
         public void onServiceDisconnected(ComponentName name) {
-
+            Log.e(TAG, "Disconnected with service");
         }
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             //连接后拿到 Binder，转换成 AIDL，获得 aidl定义的接口持有类
             s = IRemoteService.Stub.asInterface(service);
-            Log.e(TAG, "onServiceConnected client");
+            Log.e(TAG, "onServiceConnected to service");
         }
     };
 
@@ -47,8 +48,10 @@ public class MainActivity extends BaseActivity {
     }
 
     public void bindBtn(View v) {
-        Intent mIntent = new Intent("android.zjl.MyService");
-        bindService(mIntent, conn, BIND_AUTO_CREATE);
+        Intent mIntent = new Intent();
+        mIntent.setAction("android.zjl.MyService");
+        mIntent.setPackage("com.example.zjl.videoplayerdemo");
+        bindService(mIntent, conn, Context.BIND_AUTO_CREATE);
     }
 
     public void greetBtn(View v) {
@@ -68,6 +71,5 @@ public class MainActivity extends BaseActivity {
 
     public void unbindBtn(View v) {
         unbindService(conn);
-
     }
 }
